@@ -1,0 +1,78 @@
+---
+- name: Ensure Go version 1.23 is installed
+  hosts: topshit
+  become: yes
+  tasks:
+    - name: Check current Go version
+      command: go version
+      register: go_version_result
+      ignore_errors: yes  # Ignore errors if Go is not installed
+
+    - name: Set Go version variable
+      set_fact:
+        current_go_version: "{{ go_version_result.stdout | regex_search('go (\\d+\\.\\d+)') | default('0.0') }}"
+
+    - name: Install dependencies for Go installation
+      apt:
+        name:
+          - software-properties-common  # Required for add-apt-repository
+        state: present
+
+    # - name: Add PPA for Go (if needed)
+    #   apt_repository:
+    #     repo: ppa:longsleep/golang-backports
+    #     state: present
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Go version 1.23 if not already installed
+      apt:
+        name: golang-go=1.23
+        state: present
+      when: current_go_version != '1.23'
+
+- name: Bootstrap Topchain Nodes with Ignite Toolchain
+  hosts: topshit
+  become: yes
+  tasks:
+    - name: Install required packages
+      apt:
+        name:
+          - git
+          - make
+        state: present
+
+    - name: Install Ignite CLI
+      shell: |
+        curl https://get.ignite.com/cli | bash
+        sudo mv ignite /usr/local/bin/
+      args:
+        executable: /bin/bash
+
+    # - name: Set up Go environment variables
+    #   lineinfile:
+    #     path: ~/.bashrc
+    #     line: 'export PATH=$PATH:/usr/local/go/bin'
+    #     state: present
+
+    # - name: Source bashrc to apply changes
+    #   shell: source ~/.bashrc
+
+    - name: Clone Topchain repository
+      git:
+        repo: 'https://github.com/topology-foundation/topchain-node.git'
+        dest: /opt/topchain-node
+
+    - name: Build Topchain node binary using Ignite
+      shell: |
+        cd /opt/topchain-node
+        ignite chain serve < /dev/null
+      environment:
+        PATH: "/usr/local/go/bin:{{ ansible_env.PATH }}"
+
+    # - name: Start Topchain node service
+    #   command: /opt/topchain-node/dist/topchain-node start
+
+    # # ignite chain build --output dist/topchain-node
