@@ -1,5 +1,5 @@
 - name: My first play
-  hosts: topshit
+  hosts: topchain_node
   tasks:
    - name: Ping my hosts
      ansible.builtin.ping:
