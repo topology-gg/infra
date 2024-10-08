@@ -97,13 +97,9 @@
         version: dockerfile  # Specify the branch or tag you want to clone.
         single_branch: yes
 
-    # Build Topchain node binary using Ignite and run it in a container.
-    - name: Build Topchain node binary using Ignite and run it in a container.
+    # Run the topchain-node docker container.
+    - name: Run the topchain-node docker container.
       shell: |
         cd /opt/topchain-node &&
         docker build -t topchain-node . &&
-        docker run -it --name my-topchain-node topchain-node
-
-    # Uncomment if you want to start the Topchain node service directly.
-    # - name: Start Topchain node service
-    #   command: /opt/topchain-node/dist/topchain-node start
+        docker run -itd --name my-topchain-node topchain-node
