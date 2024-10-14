@@ -3,6 +3,7 @@
 ---
 - name: Let's encrypt
   hosts: "{{ target | default('all') }}"
+  serial: 1
 
   tasks:
     - name: Ensures topology directory
@@ -10,16 +11,21 @@
         path: /opt/topology/ssl
         state: directory
 
+    - name: Ensures acme folder
+      file:
+        path: /var/www/html/.well-known/acme-challenge
+        state: directory
+
     - name: Generate private key for ACME account
       community.crypto.openssl_privatekey:
-        path: "/opt/topology/ssl/acme_account_key"
+        path: "/opt/topology/ssl/{{ inventory_hostname }}-acme_account_key"
         type: RSA
         size: 2048
         mode: 0600
 
     - name: Register ACME Account
       community.crypto.acme_account:
-        account_key_src: "/opt/topology/ssl/acme_account_key"
+        account_key_src: "/opt/topology/ssl/{{ inventory_hostname }}-acme_account_key"
         acme_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
         acme_version: "2"
         state: present
@@ -49,7 +55,7 @@
 
     - name: Revoke previous certificate
       community.crypto.acme_certificate_revoke:
-        account_key_src: "/opt/topology/ssl/acme_account_key"
+        account_key_src: "/opt/topology/ssl/{{ inventory_hostname }}-acme_account_key"
         certificate: "/opt/topology/ssl/{{ inventory_hostname }}.crt"
         acme_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
         acme_version: "2"
@@ -57,7 +63,7 @@
 
     - name: Create a challenge
       community.crypto.acme_certificate:
-        account_key_src: "/opt/topology/ssl/acme_account_key"
+        account_key_src: "/opt/topology/ssl/{{ inventory_hostname }}-acme_account_key"
         account_email: "{{ email }}"
         csr: "/opt/topology/ssl/{{ inventory_hostname }}.csr"
         dest: "/opt/topology/ssl/{{ inventory_hostname }}}.crt"
@@ -81,7 +87,7 @@
 
     - name: Let the challenge(s) be validated and retrieve the cert and intermediate certificate
       community.crypto.acme_certificate:
-        account_key_src: "/opt/topology/ssl/acme_account_key"
+        account_key_src: "/opt/topology/ssl/{{ inventory_hostname }}-acme_account_key"
         csr: "/opt/topology/ssl/{{ inventory_hostname }}.csr"
         dest: "/opt/topology/ssl/{{ inventory_hostname }}.crt"
         fullchain_dest: "/opt/topology/ssl/{{ inventory_hostname }}-fullchain.crt"

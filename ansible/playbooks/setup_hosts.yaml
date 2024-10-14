@@ -1,0 +1,6 @@
+---
+- name: Setup Topology Bootstrap
+  hosts: topology_bootstrap
+  roles:
+    - "../roles/common"
+    - "../roles/topology-bootstrap"

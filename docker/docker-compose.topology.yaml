@@ -5,4 +5,4 @@ services:
     image: ghcr.io/topology-foundation/ts-topology:latest
     ports:
       - ${PORT}:50000
-    command: -m relay
+    command: -m ${MODE}
