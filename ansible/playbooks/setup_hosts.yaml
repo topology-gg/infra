@@ -1,6 +1,10 @@
 ---
 - name: Setup Topology Bootstrap
   hosts: topology_bootstrap
+  environment:
+    MODE: "relay"
+    PORT: "6960"
+    SITES: "{{ inventory_hostname }}=http://172.17.0.1:6960"
   roles:
     - "../roles/common"
-    - "../roles/topology-bootstrap"
+    - "../roles/topology-node"

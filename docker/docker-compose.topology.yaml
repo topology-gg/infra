@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   bootstrap:
     image: ghcr.io/topology-foundation/ts-topology:latest

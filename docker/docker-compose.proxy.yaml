@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   proxy:
     image: valian/docker-nginx-auto-ssl
