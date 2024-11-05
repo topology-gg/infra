@@ -1,7 +1,23 @@
 ---
+- name: Generate private key seed
+  community.crypto.openssh_keypair:
+    path: /opt/topology/infra/.private_key_seed
+
+- name: Read the private key seed content directly
+  shell: "cat /opt/topology/infra/.private_key_seed | tr -d '\n'"
+  register: private_key_seed
+
+- name: Create .env file with environment variables
+  copy:
+    dest: /opt/topology/infra/.env
+    content: |
+      ADDRESSES=/ip4/0.0.0.0/tcp/50000/ws,/ip4/0.0.0.0/tcp/50001
+      PRIVATE_KEY_SEED={{ private_key_seed.stdout }}
+
 - name: Run topology on docker
   community.docker.docker_compose_v2:
     state: present
+    pull: always
     project_src: /opt/topology/infra/docker
     files:
       - docker-compose.topology.yaml

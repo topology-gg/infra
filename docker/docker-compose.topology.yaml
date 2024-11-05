@@ -1,6 +1,9 @@
 services:
   bootstrap:
     image: ghcr.io/topology-foundation/ts-topology:latest
+    restart: always
     ports:
       - ${PORT}:50000
     command: -m ${MODE}
+    volumes:
+      - /opt/topology/infra/.env:/node/.env
