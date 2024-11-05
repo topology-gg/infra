@@ -2,6 +2,7 @@
 - name: Run topology on docker
   community.docker.docker_compose_v2:
     state: present
+    pull: always
     project_src: /opt/topology/infra/docker
     files:
       - docker-compose.topology.yaml
