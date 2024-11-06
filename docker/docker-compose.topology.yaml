@@ -1,5 +1,5 @@
 services:
-  bootstrap:
+  node:
     container_name: topology-${PORT}
     image: ghcr.io/topology-foundation/ts-topology:latest
     restart: always
