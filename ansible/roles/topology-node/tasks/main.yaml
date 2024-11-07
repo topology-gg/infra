@@ -9,7 +9,7 @@
     path: /opt/topology/hosts/{{ inventory_hostname }}/key_seed
 
 - name: Read the private key seed content directly
-  shell: "cat /opt/topology/hosts/{{ inventory_hostname }}/key_seed | tr -d '\n'"
+  shell: "sed -n '2p' /opt/topology/infra/.private_key_seed | head -c 32"
   register: private_key_seed
 
 - name: Create .env file with environment variables
@@ -26,11 +26,15 @@
     create: yes
   when: "'topology_bootstrap' in group_names"
 
+- name: Add composer file
+  template:
+    src: docker-compose.yaml.j2
+    dest: /opt/topology/hosts/{{ inventory_hostname }}/docker-compose.yaml
+
 - name: Run topology on docker
   community.docker.docker_compose_v2:
     state: present
     pull: always
-    project_src: /opt/topology/infra/docker
+    project_src: /opt/topology/hosts/{{ inventory_hostname }}
     files:
-      - docker-compose.topology.yaml
-      # - docker-compose.proxy.yaml
+      - docker-compose.yaml

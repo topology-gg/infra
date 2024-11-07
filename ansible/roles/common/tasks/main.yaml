@@ -18,9 +18,3 @@
 
 - name: Install docker
   import_tasks: docker.yaml
-
-- name: Clone infra repository
-  git:
-    repo: https://github.com/topology-foundation/infra
-    dest: /opt/topology/infra
-    update: yes

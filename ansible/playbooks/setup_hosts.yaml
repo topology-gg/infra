@@ -1,22 +1,18 @@
 ---
 - name: Setup Topology Bootstrap
   hosts: topology_bootstrap
-  environment:
-    MODE: "bootstrap"
-    HOST: "{{ inventory_hostname }}"
-    PORT: "6960"
-    SITES: "{{ inventory_hostname }}=http://172.17.0.1:6960"
+  vars:
+    mode: "bootstrap"
+    docker_port: "6960"
   roles:
     - "../roles/common"
     - "../roles/topology-node"
 
 - name: Setup Topology Node
   hosts: topology_node
-  environment:
-    MODE: "node"
-    HOST: "{{ inventory_hostname }}"
-    PORT: "69{{ inventory_hostname.replace('node', '').replace('.topology.gg', '') }}"
-    SITES: "{{ inventory_hostname }}=http://172.17.0.1:69{{ inventory_hostname.replace('node', '').replace('.topology.gg', '') }}"
+  vars:
+    mode: "node"
+    docker_port: "69{{ inventory_hostname.replace('node', '').replace('.topology.gg', '') }}"
   roles:
     - "../roles/common"
     - "../roles/topology-node"

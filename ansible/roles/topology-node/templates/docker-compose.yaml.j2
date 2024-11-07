@@ -1,0 +1,10 @@
+services:
+  node-{{ docker_port }}:
+    container_name: node-{{ docker_port }}
+    image: ghcr.io/topology-foundation/ts-topology:latest
+    restart: always
+    ports:
+      - {{ docker_port }}:50000
+    command: -m {{ mode }}
+    volumes:
+      - /opt/topology/hosts/{{ inventory_hostname }}/.env:/node/.env

@@ -1,13 +1,19 @@
 ---
+- name: Verify if Docker is installed
+  command: docker --version
+  register: docker_version
+
 - name: Add Docker GPG apt Key
   apt_key:
     url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
     state: present
+  when: docker_version.rc != 0
 
 - name: Add Docker Repository
   apt_repository:
     repo: deb https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
     state: present
+  when: docker_version.rc != 0
 
 - name: Update apt and install docker-ce
   apt:
@@ -18,3 +24,4 @@
       - docker-compose-plugin
     state: latest
     update_cache: true
+  when: docker_version.rc != 0
