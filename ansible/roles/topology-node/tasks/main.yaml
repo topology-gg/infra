@@ -22,7 +22,9 @@
 - name: Add bootstrap flag
   lineinfile:
     path: /opt/topology/hosts/{{ inventory_hostname }}/.env
-    line: BOOTSTRAP=true
+    line: |
+      BOOTSTRAP=true
+      BOOTSTRAP_PEERS=[]
     create: yes
   when: "'topology_bootstrap' in group_names"
 

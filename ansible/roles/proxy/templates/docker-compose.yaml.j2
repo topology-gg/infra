@@ -1,5 +1,6 @@
 services:
   proxy:
+    container_name: proxy
     image: valian/docker-nginx-auto-ssl
     restart: on-failure
     ports:
@@ -9,9 +10,7 @@ services:
       - ssl_data:/etc/resty-auto-ssl
     environment:
       FORCE_HTTPS: true
-      SITES: ${SITES}
-    depends_on:
-      - bootstrap
+      SITES: {{ sites }}
 
 volumes:
   ssl_data:

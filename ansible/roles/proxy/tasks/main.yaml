@@ -1,0 +1,13 @@
+---
+- name: Add composer file
+  template:
+    src: docker-compose.yaml.j2
+    dest: /opt/topology/docker-compose.proxy.yaml
+
+- name: Run proxy on docker
+  community.docker.docker_compose_v2:
+    state: present
+    pull: always
+    project_src: /opt/topology/
+    files:
+      - docker-compose.proxy.yaml
