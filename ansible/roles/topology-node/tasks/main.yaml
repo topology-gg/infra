@@ -9,7 +9,7 @@
     path: /opt/topology/hosts/{{ inventory_hostname }}/key_seed
 
 - name: Read the private key seed content directly
-  shell: "sed -n '2p' /opt/topology/hosts/{{ inventory_hostname }}/key_seed | head -c 32"
+  shell: "sed -n '3p' /opt/topology/hosts/{{ inventory_hostname }}/key_seed | head -c 32"
   register: private_key_seed
 
 - name: Create .env file with environment variables
@@ -37,6 +37,7 @@
   community.docker.docker_compose_v2:
     state: present
     pull: always
+    recreate: always
     project_src: /opt/topology/hosts/{{ inventory_hostname }}
     files:
       - docker-compose.yaml
