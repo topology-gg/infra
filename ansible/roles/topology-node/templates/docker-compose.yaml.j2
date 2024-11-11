@@ -1,6 +1,6 @@
 services:
   node-{{ docker_port }}:
-    container_name: node-{{ docker_port }}
+    container_name: {{ mode }}-{{ docker_port }}
     image: ghcr.io/topology-foundation/ts-topology:latest
     restart: always
     ports:
