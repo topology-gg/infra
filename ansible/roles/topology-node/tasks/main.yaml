@@ -16,7 +16,7 @@
   copy:
     dest: /opt/topology/hosts/{{ inventory_hostname }}/.env
     content: |
-      ADDRESSES=/ip4/0.0.0.0/tcp/50000/ws,/ip4/0.0.0.0/tcp/50001
+      ADDRESSES=/ip4/0.0.0.0/tcp/50000/ws,/p2p-circuit
       PRIVATE_KEY_SEED={{ private_key_seed.stdout }}
 
 - name: Add bootstrap flag

@@ -3,8 +3,7 @@ services:
     container_name: {{ mode }}-{{ docker_port }}
     image: ghcr.io/topology-foundation/ts-drp:latest
     restart: always
-    ports:
-      - {{ docker_port }}:50000
+    network_mode: host
     command: -m {{ mode }}
     volumes:
-      - /opt/topology/hosts/{{ inventory_hostname }}/.env:/node/.env
+      - /opt/topology/hosts/{{ inventory_hostname }}/.env:/ts-drp/.env
