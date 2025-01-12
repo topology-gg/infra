@@ -21,7 +21,7 @@
   hosts: topology_bootstrap
   vars:
     sites:
-      "{{ inventory_hostname }}=http://127.0.0.1:50000"
+      "{{ inventory_hostname }}=http://172.17.0.1:50000"
       # ;{{ groups["topology_node"]
       #   | map("regex_replace", "(.*\D)(\d+)(.*)", "\1\2\3=http://172.17.0.1:69\2")
       #   | list
