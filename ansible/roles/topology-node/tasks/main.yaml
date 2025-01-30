@@ -16,7 +16,7 @@
   copy:
     dest: /opt/topology/hosts/{{ inventory_hostname }}/.env
     content: |
-      ADDRESSES=/ip4/0.0.0.0/tcp/50000/ws,/p2p-circuit
+      LISTEN_ADDRESSES=/ip4/0.0.0.0/tcp/50000/ws
       PRIVATE_KEY_SEED={{ private_key_seed.stdout }}
 
 - name: Add bootstrap flag
@@ -24,7 +24,7 @@
     path: /opt/topology/hosts/{{ inventory_hostname }}/.env
     line: |
       BOOTSTRAP=true
-      BOOTSTRAP_PEERS=[]
+      BOOTSTRAP_PEERS=
     create: yes
   when: "'topology_bootstrap' in group_names"
 
