@@ -1,0 +1,48 @@
+version: "3.7"
+
+services:
+{% if "prometheus" in services_to_deploy %}
+  prometheus:
+    image: prom/prometheus:{{ prometheus_version | default('latest') }}
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "{{ prometheus_port | default('9090') }}:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+{% endif %}
+
+{% if "pushgateway" in services_to_deploy %}
+  pushgateway:
+    image: prom/pushgateway:{{ pushgateway_version | default('latest') }}
+    container_name: pushgateway
+    ports:
+      - "{{ pushgateway_port | default('9091') }}:9091"
+{% if "prometheus" in services_to_deploy %}
+    depends_on:
+      - prometheus
+{% endif %}
+{% endif %}
+
+{% if "grafana" in services_to_deploy %}
+  grafana:
+    image: grafana/grafana:{{ grafana_version | default('latest') }}
+    container_name: grafana
+    ports:
+      - "{{ grafana_port | default('3000') }}:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD={{ grafana_admin_password | default('admin') }}
+      - GF_USERS_ALLOW_SIGN_UP=false
+{% endif %}
+
+{% if "metrics-cleanup" in services_to_deploy and "pushgateway" in services_to_deploy %}
+  metrics-cleanup:
+    build:
+      context: .
+      dockerfile: Dockerfile.cleanup
+    container_name: metrics-cleanup
+    depends_on:
+      - pushgateway 
