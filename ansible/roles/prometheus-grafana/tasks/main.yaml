@@ -1,0 +1,66 @@
+---
+- name: Ensure directory exists for Prometheus and Grafana
+  file:
+    path: /opt/prometheus-grafana
+    state: directory
+    mode: "0755"
+
+- name: Create Prometheus configuration
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/prometheus-grafana/prometheus.yml
+    mode: "0644"
+  when: "'prometheus' in services_to_deploy"
+
+- name: Ensure Grafana provisioning directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - /opt/prometheus-grafana/grafana/provisioning/dashboards
+    - /opt/prometheus-grafana/grafana/provisioning/datasources
+  when: "'grafana' in services_to_deploy"
+
+- name: Create Grafana dashboard provisioning
+  template:
+    src: default.yaml.j2
+    dest: /opt/prometheus-grafana/grafana/provisioning/dashboards/default.yaml
+    mode: "0644"
+  when: "'grafana' in services_to_deploy"
+
+- name: Create Grafana datasource provisioning
+  template:
+    src: datasource.yml.j2
+    dest: /opt/prometheus-grafana/grafana/provisioning/datasources/prometheus.yml
+    mode: "0644"
+  when: "'grafana' in services_to_deploy"
+
+- name: Copy cleanup script
+  template:
+    src: cleanup-metrics.sh.j2
+    dest: /opt/prometheus-grafana/cleanup-metrics.sh
+    mode: "0755"
+  when: "'metrics-cleanup' in services_to_deploy"
+
+- name: Create Docker Compose file
+  template:
+    src: docker-compose.yaml.j2
+    dest: /opt/prometheus-grafana/docker-compose.yaml
+    mode: "0644"
+
+- name: Create Dockerfile for cleanup
+  template:
+    src: Dockerfile.cleanup.j2
+    dest: /opt/prometheus-grafana/Dockerfile.cleanup
+    mode: "0644"
+  when: "'metrics-cleanup' in services_to_deploy"
+
+- name: Build and start services with Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: /opt/prometheus-grafana
+    files:
+      - docker-compose.yaml
+    state: present
+    pull: yes
+    build: yes

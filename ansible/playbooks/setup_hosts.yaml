@@ -29,3 +29,34 @@
       # }}"
   roles:
     - "../roles/proxy"
+
+- name: Setup Prometheus
+  hosts: prometheus.topology.gg
+  vars:
+    prometheus_port: "9090"
+    pushgateway_host: "pushgateway.topology.gg"
+    pushgateway_port: "9091"
+    services_to_deploy: ["prometheus", "metrics-cleanup"]
+  roles:
+    - "../roles/common"
+    - "../roles/prometheus-grafana"
+
+- name: Setup Pushgateway
+  hosts: pushgateway.topology.gg
+  vars:
+    pushgateway_port: "9091"
+    services_to_deploy: ["pushgateway"]
+  roles:
+    - "../roles/common"
+    - "../roles/prometheus-grafana"
+
+- name: Setup Grafana
+  hosts: grafana.topology.gg
+  vars:
+    grafana_port: "3000"
+    grafana_admin_password: "admin" # Change this in production
+    prometheus_server: "prometheus.topology.gg"
+    services_to_deploy: ["grafana"]
+  roles:
+    - "../roles/common"
+    - "../roles/prometheus-grafana"
